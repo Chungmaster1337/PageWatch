@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dynamic Page Monitor - Data Export</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    
+    .header {
+      background: white;
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 24px;
+    }
+    
+    .header h1 {
+      font-size: 28px;
+      color: #333;
+      margin-bottom: 8px;
+    }
+    
+    .header p {
+      color: #666;
+      font-size: 16px;
+    }
+    
+    .controls {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 24px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    
+    button {
+      background: #4285f4;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+    
+    button:hover {
+      background: #3367d6;
+    }
+    
+    button.secondary {
+      background: #6c757d;
+    }
+    
+    button.secondary:hover {
+      background: #545b62;
+    }
+    
+    button.danger {
+      background: #dc3545;
+    }
+    
+    button.danger:hover {
+      background: #c82333;
+    }
+    
+    button.success {
+      background: #28a745;
+    }
+    
+    button.success:hover {
+      background: #218838;
+    }
+    
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .stats {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    
+    .stat-item {
+      text-align: center;
+      padding: 16px;
+      background: #f8f9fa;
+      border-radius: 4px;
+    }
+    
+    .stat-number {
+      font-size: 32px;
+      font-weight: bold;
+      color: #4285f4;
+      margin-bottom: 4px;
+    }
+    
+    .stat-label {
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .data-section {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    
+    .section-header {
+      background: #f8f9fa;
+      padding: 16px 20px;
+      border-bottom: 1px solid #ddd;
+      font-weight: 600;
+      font-size: 16px;
+      color: #333;
+    }
+    
+    .section-content {
+      padding: 20px;
+    }
+    
+    .data-display {
+      background: #f8f9fa;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 16px;
+      max-height: 400px;
+      overflow: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    
+    .url-item {
+      background: #f8f9fa;
+      padding: 12px;
+      margin-bottom: 12px;
+      border-radius: 4px;
+      border-left: 4px solid #4285f4;
+    }
+    
+    .url-title {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 4px;
+      word-break: break-all;
+    }
+    
+    .url-stats {
+      font-size: 12px;
+      color: #666;
+    }
+    
+    .history-item {
+      background: #f8f9fa;
+      padding: 12px;
+      margin-bottom: 12px;
+      border-radius: 4px;
+      border-left: 4px solid #28a745;
+    }
+    
+    .history-url {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+      word-break: break-all;
+    }
+    
+    .history-changes {
+      font-size: 12px;
+      color: #666;
+    }
+    
+    .change-entry {
+      margin-left: 16px;
+      margin-bottom: 4px;
+      padding: 4px 0;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .change-time {
+      font-weight: 500;
+      color: #555;
+    }
+    
+    .loading {
+      text-align: center;
+      color: #666;
+      padding: 40px;
+    }
+    
+    .status {
+      padding: 12px 16px;
+      border-radius: 4px;
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+    
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    .status.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Data Export & Management</h1>
+      <p>View, export, and manage all stored monitoring data</p>
+    </div>
+    
+    <div class="controls">
+      <button id="refreshBtn">Refresh Data</button>
+      <button id="exportJsonBtn" class="success">Export as JSON</button>
+      <button id="exportCsvBtn" class="success">Export History as CSV</button>
+      <button id="clearHistoryBtn" class="secondary">Clear History</button>
+      <button id="clearAllBtn" class="danger">Clear All Data</button>
+    </div>
+    
+    <div id="statusContainer"></div>
+    
+    <div class="stats" id="statsContainer">
+      <div class="loading">Loading statistics...</div>
+    </div>
+    
+    <div class="data-section">
+      <div class="section-header">Monitored URLs</div>
+      <div class="section-content">
+        <div id="urlsContainer" class="loading">Loading URLs...</div>
+      </div>
+    </div>
+    
+    <div class="data-section">
+      <div class="section-header">Change History</div>
+      <div class="section-content">
+        <div id="historyContainer" class="loading">Loading history...</div>
+      </div>
+    </div>
+    
+    <div class="data-section">
+      <div class="section-header">Current Snapshots</div>
+      <div class="section-content">
+        <div id="snapshotsContainer" class="loading">Loading snapshots...</div>
+      </div>
+    </div>
+    
+    <div class="data-section">
+      <div class="section-header">Raw Data (JSON)</div>
+      <div class="section-content">
+        <div class="data-display" id="rawDataContainer">Loading raw data...</div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="data-export.js"></script>
+</body>
+</html>
